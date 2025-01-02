@@ -23,13 +23,16 @@ export class User {
     countryCode: string
 
   @Prop()
+    isActive: boolean
+
+  @Prop({ required: true })
     email: string
 
   @Prop()
     password: string
 
   @Prop()
-    role: string[]
+    roles: string[]
 
   createdAt: Date
   updatedAt: Date
@@ -37,4 +40,7 @@ export class User {
 }
 
 export type UserDocument = User & Document
-export const UserSchema = SchemaFactory.createForClass(User)
+const UserSchema = SchemaFactory.createForClass(User)
+UserSchema.index({ email: 1 }, { unique: true })
+UserSchema.index({ govId: 1, govIdType: 1 }, { unique: true })
+export { UserSchema }
