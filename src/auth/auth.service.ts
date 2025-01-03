@@ -1,26 +1,36 @@
-import { Injectable } from '@nestjs/common'
-import { CreateAuthDto } from './dto/create-auth.dto'
-import { UpdateAuthDto } from './dto/update-auth.dto'
+import { HttpException, Injectable } from '@nestjs/common'
+import { JwtService } from '@nestjs/jwt'
+import * as bcrypt from 'bcrypt'
+
+import { AuthRepositoryService } from './authRepository.service'
+import { EValidRoles } from '@/auth/constants'
+import { IRegisterEmail, IUser } from '@/auth/interfaces'
 
 @Injectable()
 export class AuthService {
-  create (createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth'
+  constructor (
+    private readonly authRepositoryService: AuthRepositoryService,
+    private readonly jwtService: JwtService
+  ) {}
+
+  async createUserByEmail (email: string): Promise<IUser> {
+    const formatEmail: string = email.trim().toLowerCase()
+    const findEmail: IUser = await this.authRepositoryService.findUserByEmail(formatEmail)
+    if (findEmail) throw new HttpException('El email ya existe por favor complete el regístro', 400)
+    const newUser: IRegisterEmail = {
+      email,
+      roles: [EValidRoles.USER],
+      isActive: false
+    }
+    return this.authRepositoryService.saveEmail(newUser)
   }
 
-  findAll () {
-    return `This action returns all auth`
-  }
-
-  findOne (id: number) {
-    return `This action returns a #${id} auth`
-  }
-
-  update (id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`
-  }
-
-  remove (id: number) {
-    return `This action removes a #${id} auth`
+  async completeRegister (userId: string, user: IUser): Promise<IUser> {
+    const { password } = user
+    const foundUser: IUser = await this.authRepositoryService.findUserById(userId)
+    user.password = bcrypt.hashSync(password, 10)
+    user.isActive = true
+    if (!foundUser) return this.authRepositoryService.createUser(user)
+    return this.authRepositoryService.updateUser(userId, user)
   }
 }

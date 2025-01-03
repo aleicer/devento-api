@@ -1,2 +1,2 @@
 export { IJwtPayload } from './jwtPayload.interface'
-export { IUser } from './user.interface'
+export { IUser, IRegisterEmail } from './user.interface'

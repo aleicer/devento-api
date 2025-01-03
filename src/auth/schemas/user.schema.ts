@@ -1,13 +1,14 @@
-import { Prop, SchemaFactory } from '@nestjs/mongoose'
+import { Prop, SchemaFactory, Schema } from '@nestjs/mongoose'
 import mongoose, { Document } from 'mongoose'
 
+@Schema({ timestamps: true })
 export class User {
   _id!: mongoose.Types.ObjectId
 
-  @Prop({ required: true })
+  @Prop()
     firstName: string
 
-  @Prop({ required: true })
+  @Prop()
     lastName: string
 
   @Prop()
@@ -25,7 +26,7 @@ export class User {
   @Prop()
     isActive: boolean
 
-  @Prop({ required: true })
+  @Prop({ required: true, trim: true, lowercase: true })
     email: string
 
   @Prop()

@@ -10,7 +10,13 @@ export interface IUser {
     isActive: boolean
     password: string
     roles: string[]
-    createdAt: Date
-    updatedAt: Date
-    __v: number
+    createdAt?: Date
+    updatedAt?: Date
+    __v?: number
+}
+
+export interface IRegisterEmail {
+    email: string
+    roles: string[]
+    isActive: boolean
 }
